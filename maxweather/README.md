@@ -1,3 +1,34 @@
+## spring-boot-weather-forecast-client-api
+
+Purpose : Use openweathermap in spring boot API <br/>
+
+### Local run steps <br/>
+1- Start Spring Boot REST API by running main method containing class WeatherForecastClientAPI.java in your IDE. <br/>
+<pre> 
+spring-boot-weather-forecast-client-api $ mvn clean install -U -X <br/>
+</pre>
+
+swagger_ui can be accessed via http port 8082 from localhost : <br/>
+http://localhost:8082/weather-forecast/swagger-ui/index.html#/ <br/><br/>
+
+
+### Tech Stack
+<pre>
+Java 17
+spring boot
+spring boot starter data jpa
+spring boot starter web
+spring boot starter test
+springdoc openapi ui
+springfox swagger ui
+logback
+maven
+mockito-core
+mockito-junit-jupiter
+mockito-inline
+</pre>
+
+
 ## API OPERATIONS
 ### Authorization Header with Jwt token in every requests
 ### Operation 1 : Get Weather Forecast By City Id provided in http body

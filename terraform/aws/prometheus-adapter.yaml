@@ -13,6 +13,6 @@ rules:
       name:
         matches: "^http_server_requests_seconds_count(.*)"
         as: "http_server_requests_seconds_count_sum"
-      metricsQuery: sum(<<.Series>>{<<.LabelMatchers>>,uri=~"/forecast.*"}) by (<<.GroupBy>>)
+      metricsQuery: sum(rate(http_server_requests_seconds_count{<<.LabelMatchers>>, uri=~"/forecast.*"}[1m])) by (<<.GroupBy>>)
 nodeSelector:
   node: app

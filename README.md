@@ -27,7 +27,8 @@ I use Postman Runner to Spam request
 #### Pod Auto Scale
 ![img_8.png](img_8.png)
 
-> **_NOTE:_**  In the picture above I just want to show that I'm able to autoscale the node when I run the jenkins pipeline.
+#### Cloudwatch Log
+![img_11.png](img_11.png)
 
 ### Item 3 The below Kubernetes artifacts that are required to deploy the application
 
@@ -37,7 +38,7 @@ I use Postman Runner to Spam request
 
 ### Item 4 Jenkins pipeline script to deploy application(s) into the Kubernetes cluster
 [Jenkins Pipeline](jenkins)
-
+![img_12.png](img_12.png)
 ### Item 5 Application API deployed into AWS API gateway
 
 ![img_1.png](img_1.png)

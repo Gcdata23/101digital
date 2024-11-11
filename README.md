@@ -18,6 +18,8 @@ In the Terraform script, there are 2 part,
 For Autoscale, I use supported tools: prometheus and prometheus adapter to autoscale the app using metric **"http_server_requests_seconds_count_sum"**
 Test Result for Autoscale
 
+I use Postman Runner to Spam request
+![img_10.png](img_10.png)
 #### Node Auto Scale
 ![img_9.png](img_9.png)
 ![img_7.png](img_7.png)
@@ -50,5 +52,10 @@ For Authorization I used IAM BuildIn with a IAM user
 2. With Authorization
 ![img_6.png](img_6.png)
 
-2. Without Authorization
+3. Without Authorization
 ![img_3.png](img_3.png)
+
+4. Postman Script
+   curl --location 'https://sa8oyjqsh9.execute-api.us-west-2.amazonaws.com/weather-forecast/forecast/get/524901' \
+   --header 'X-Amz-Date: ••••••' \
+   --header 'Authorization: ••••••'

@@ -1,0 +1,22 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: weather-app
+  labels:
+    app: weather-app
+    env: dev
+spec:
+  endpoints:
+    - port: http
+      interval: 1s
+      honorLabels: true
+      path: /weather-forecast/actuator/prometheus
+      scheme: http
+      scrapeTimeout: 1s
+  jobLabel: "weather-app"
+  selector:
+    matchLabels:
+      app: weather-app
+  targetLabels:
+    - weather-app
+    - weather-app-service-monitoring

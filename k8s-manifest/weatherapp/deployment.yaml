@@ -23,7 +23,7 @@ spec:
         node: "app"
       containers:
         - name: weather-container
-          image: 711387138131.dkr.ecr.us-west-2.amazonaws.com/test:main-9
+          image: 711387138131.dkr.ecr.us-west-2.amazonaws.com/test:develop-9
           ports:
             - containerPort: 8082
           env:

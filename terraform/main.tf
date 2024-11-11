@@ -375,4 +375,8 @@ resource "helm_release" "jenkins" {
     name  = "controller.installPlugins[5]"
     value = "pipeline-aws:1.45"
   }
+  set {
+    name  = "controller.installPlugins[5]"
+    value = "kubernetes-cli:1.12.1"
+  }
 }

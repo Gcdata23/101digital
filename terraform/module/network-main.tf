@@ -111,21 +111,21 @@ resource "aws_route_table_association" "eks_nodegroup" {
 #      service_name = "com.amazonaws.${var.region}.eks-auth"
 #    }
 #    "ecr-api" = {
-#      service_name = "com.amazonaws.${var.region}.ecr.api "
+#      service_name = "com.amazonaws.${var.region}.ecr.api"
 #    }
 #    "ecr-dkr" = {
 #      service_name = "com.amazonaws.${var.region}.ecr.dkr"
 #    }
-#    "ec2 " = {
+#    "ec2" = {
 #      service_name = "com.amazonaws.${var.region}.ec2"
 #    }
 #    "elasticloadbalancing" = {
 #      service_name = "com.amazonaws.${var.region}.elasticloadbalancing"
 #    }
-#    "logs " = {
+#    "logs" = {
 #      service_name = "com.amazonaws.${var.region}.logs"
 #    }
-#    "sts  " = {
+#    "sts" = {
 #      service_name = "com.amazonaws.${var.region}.sts"
 #    }
 #  }
@@ -137,6 +137,6 @@ resource "aws_route_table_association" "eks_nodegroup" {
 #  service_name      = each.value.service_name
 #  vpc_endpoint_type = "Interface"
 #  security_group_ids = [aws_security_group.eks.id]
-#  subnet_ids        = aws_subnet.private.id
+#  subnet_ids        = concat([aws_subnet.eks_nodegroup.id],values(aws_subnet.eks_cluster)[*].id)
 #  private_dns_enabled = true
 #}

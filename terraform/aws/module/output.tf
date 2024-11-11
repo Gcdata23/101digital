@@ -33,9 +33,9 @@ output "aws_security_group_nlb_id" {
   value = aws_security_group.eks-nlb.id
 }
 
-output "aws_cloudwatch_log_group_arn" {
-  value = aws_cloudwatch_log_group.test.arn
-}
+#output "aws_cloudwatch_log_group_arn" {
+#  value = aws_cloudwatch_log_group.test.arn
+#}
 output "eks_cloudwatch_role_arn" {
   value = aws_iam_role.cloudwatch.arn
 }

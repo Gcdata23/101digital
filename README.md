@@ -8,7 +8,7 @@
 
 ### Item 2 Terraform scripts to create all the infrastructure components (The Terraform code must be modularised. CloudWatch services and scaling code must be tested prior to submission)
 
-[Terraform Code](terraform)
+[AWS Terraform Code](terraform/aws)
 
 In the Terraform script, there are 2 part,
 1. The first part is the module Infrastructure Require to run the app
@@ -35,9 +35,13 @@ Test Result for Autoscale
 ![img_1.png](img_1.png)
 I created VPN Link cause the LB is internal
 ![img_4.png](img_4.png)
-### Item 6 Working postman script to demonstrate the API with proper authentication
 
-1. With Authorization
+### Item 6 Working postman script to demonstrate the API with proper authentication
+For Authorization I used IAM BuildIn with a IAM user
+1. Authorization Configuration
+![img_5.png](img_5.png)
+
+2. With Authorization
 ![img_2.png](img_2.png)
 
 2. Without Authorization

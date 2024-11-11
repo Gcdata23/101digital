@@ -1,11 +1,11 @@
-resource "aws_cloudwatch_log_group" "test" {
-  name = "test"
-
-  tags = {
-    Environment = "production"
-    Application = "maxweather"
-  }
-}
+#resource "aws_cloudwatch_log_group" "test" {
+#  name = "test"
+#
+#  tags = {
+#    Environment = "production"
+#    Application = "maxweather"
+#  }
+#}
 
 # AWSLoadBalancerControllerIAMPolicy
 data "aws_iam_policy_document" "cloudwatch_assume_role_policy" {

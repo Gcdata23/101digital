@@ -23,6 +23,9 @@
 hs_err_pid*
 replay_pid*
 /terraform/.terraform/
-/terraform/.terraform.lock.hcl
+/terraform/aws/.terraform.lock.hcl
 /terraform/.terraform.tfstate.lock.info
 /.idea/
+/terraform/aws/.terraform.lock.hcl
+/terraform/aws/.terraform/
+/terraform/aws/.terraform.tfstate.lock.info

@@ -186,10 +186,15 @@ resource "helm_release" "nginx_ingress" {
     name  = "controller.service.externalTrafficPolicy"
     value = "Local"
   }
-  #  set {
-  #    name  = "controller.service.annotations.service\\.beta\\.kubernetes\\.io/aws-load-balancer-internal"
-  #    value = "true"
-  #  }
+  set {
+    name  = "controller.kind"
+    value = "DaemonSet"
+  }
+
+  set {
+    name  = "controller.service.annotations.service\\.beta\\.kubernetes\\.io/aws-load-balancer-internal"
+    value = "true"
+  }
   set {
     name  = "controller.service.annotations.service\\.beta\\.kubernetes\\.io/aws-load-balancer-type"
     value = "nlb"
@@ -202,6 +207,7 @@ resource "helm_release" "nginx_ingress" {
     name  = "controller.service.annotations.service\\.beta\\.kubernetes\\.io/aws-load-balancer-security-groups"
     value = module.max_weather.aws_security_group_nlb_id
   }
+  depends_on = [module.max_weather]
 }
 
 # Log To CloudWatch
@@ -280,6 +286,7 @@ resource "helm_release" "fluent-bit" {
     name  = "env[5].value"
     value = "On"
   }
+  depends_on = [module.max_weather]
 }
 
 resource "helm_release" "prometheus" {
@@ -326,6 +333,7 @@ resource "helm_release" "prometheus" {
     name  = "thanos.nodeSelector.node"
     value = "app"
   }
+  depends_on = [module.max_weather]
 }
 
 resource "helm_release" "prometheus-adapter" {
@@ -336,6 +344,7 @@ resource "helm_release" "prometheus-adapter" {
     name  = "nodeSelector.node"
     value = "app"
   }
+  depends_on = [module.max_weather]
 }
 
 resource "helm_release" "jenkins" {
@@ -379,4 +388,5 @@ resource "helm_release" "jenkins" {
     name  = "controller.installPlugins[5]"
     value = "kubernetes-cli:1.12.1"
   }
+  depends_on = [module.max_weather]
 }

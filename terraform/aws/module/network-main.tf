@@ -18,6 +18,8 @@ resource "aws_vpc_ipam_pool_cidr" "vpc_ipam_pool_cidr" {
 resource "aws_vpc" "vpc" {
   ipv4_ipam_pool_id   = aws_vpc_ipam_pool.vpc_ipam_pool.id
   ipv4_netmask_length = var.vpc_ipv4_netmask_length
+  enable_dns_support = true
+  enable_dns_hostnames = true
   depends_on = [
     aws_vpc_ipam_pool_cidr.vpc_ipam_pool_cidr
   ]
@@ -49,7 +51,8 @@ resource "aws_subnet" "eks_cluster" {
 resource "aws_subnet" "eks_nodegroup" {
   vpc_id                  = aws_vpc.vpc.id
   cidr_block              = "10.0.10.0/24"
-  map_public_ip_on_launch = true
+#  map_public_ip_on_launch = true
+
   tags = {
     Name                              = "private-us-east-1b"
     "kubernetes.io/role/internal-elb" = "1"
@@ -63,16 +66,16 @@ resource "aws_internet_gateway" "internetgw" {
   depends_on = [aws_subnet.eks_cluster]
 }
 
-#resource "aws_eip" "natgw_eip" {
-#  domain   = "vpc"
-#}
+resource "aws_eip" "natgw_eip" {
+  domain   = "vpc"
+}
 
-#resource "aws_nat_gateway" "natgw" {
-#  allocation_id = aws_eip.natgw_eip.id
-#  subnet_id     = aws_subnet.public["us-west-2a"].id
-#
-#  depends_on = [aws_internet_gateway.internetgw]
-#}
+resource "aws_nat_gateway" "natgw" {
+  allocation_id = aws_eip.natgw_eip.id
+  subnet_id     = aws_subnet.eks_cluster["subnet-b"].id
+
+  depends_on = [aws_subnet.eks_cluster]
+}
 
 resource "aws_route_table" "eks_cluster" {
   vpc_id = aws_vpc.vpc.id
@@ -83,7 +86,7 @@ resource "aws_route_table" "eks_cluster" {
   }
 }
 
-resource "aws_route_table_association" "public" {
+resource "aws_route_table_association" "eks_cluster" {
   for_each       = aws_subnet.eks_cluster
   subnet_id      = each.value.id
   route_table_id = aws_route_table.eks_cluster.id
@@ -93,7 +96,7 @@ resource "aws_route_table" "eks_nodegroup" {
   vpc_id = aws_vpc.vpc.id
   route {
     cidr_block = "0.0.0.0/0"
-    gateway_id = aws_internet_gateway.internetgw.id
+    gateway_id = aws_nat_gateway.natgw.id
   }
 }
 
@@ -102,41 +105,41 @@ resource "aws_route_table_association" "eks_nodegroup" {
   route_table_id = aws_route_table.eks_nodegroup.id
 }
 
-#locals {
-#  vpc_endpoint_service = {
-#    "eks-api" = {
-#      service_name = "com.amazonaws.${var.region}.eks"
-#    }
-#    "eks-auth" = {
-#      service_name = "com.amazonaws.${var.region}.eks-auth"
-#    }
-#    "ecr-api" = {
-#      service_name = "com.amazonaws.${var.region}.ecr.api"
-#    }
-#    "ecr-dkr" = {
-#      service_name = "com.amazonaws.${var.region}.ecr.dkr"
-#    }
-#    "ec2" = {
-#      service_name = "com.amazonaws.${var.region}.ec2"
-#    }
-#    "elasticloadbalancing" = {
-#      service_name = "com.amazonaws.${var.region}.elasticloadbalancing"
-#    }
-#    "logs" = {
-#      service_name = "com.amazonaws.${var.region}.logs"
-#    }
-#    "sts" = {
-#      service_name = "com.amazonaws.${var.region}.sts"
-#    }
-#  }
-#}
-## Interface Endpoint for EKS API
-#resource "aws_vpc_endpoint" "eks_api" {
-#  for_each = local.vpc_endpoint_service
-#  vpc_id            = aws_vpc.vpc.id
-#  service_name      = each.value.service_name
-#  vpc_endpoint_type = "Interface"
-#  security_group_ids = [aws_security_group.eks.id]
-#  subnet_ids        = concat([aws_subnet.eks_nodegroup.id],values(aws_subnet.eks_cluster)[*].id)
-#  private_dns_enabled = true
-#}
+locals {
+  vpc_endpoint_service = {
+    "eks-api" = {
+      service_name = "com.amazonaws.${var.region}.eks"
+    }
+    "eks-auth" = {
+      service_name = "com.amazonaws.${var.region}.eks-auth"
+    }
+    "ecr-api" = {
+      service_name = "com.amazonaws.${var.region}.ecr.api"
+    }
+    "ecr-dkr" = {
+      service_name = "com.amazonaws.${var.region}.ecr.dkr"
+    }
+    "ec2" = {
+      service_name = "com.amazonaws.${var.region}.ec2"
+    }
+    "elasticloadbalancing" = {
+      service_name = "com.amazonaws.${var.region}.elasticloadbalancing"
+    }
+    "logs" = {
+      service_name = "com.amazonaws.${var.region}.logs"
+    }
+    "sts" = {
+      service_name = "com.amazonaws.${var.region}.sts"
+    }
+  }
+}
+# Interface Endpoint for EKS API
+resource "aws_vpc_endpoint" "eks_api" {
+  for_each = local.vpc_endpoint_service
+  vpc_id            = aws_vpc.vpc.id
+  service_name      = each.value.service_name
+  vpc_endpoint_type = "Interface"
+  security_group_ids = [aws_security_group.eks.id]
+  subnet_ids        = [aws_subnet.eks_nodegroup.id]
+  private_dns_enabled = true
+}

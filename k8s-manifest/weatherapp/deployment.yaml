@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: weather-app
+  labels:
+    app: weather-app
+spec:
+  replicas: 2
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+  selector:
+    matchLabels:
+      app: weather-app
+  template:
+    metadata:
+      labels:
+        app: weather-app
+    spec:
+      nodeSelector:
+        node: "app"
+      containers:
+        - name: weather-container
+          image: 711387138131.dkr.ecr.us-west-2.amazonaws.com/test:main-9
+          ports:
+            - containerPort: 8082
+          env:
+            - name: JAVA_OPTS
+              value: "-Xms512m -Xmx1024m"
+          resources:
+            requests:
+              memory: "250Mi"
+              cpu: "800m"
+            limits:
+              memory: "1024Mi"
+              cpu: "1000m"
+          startupProbe:
+            httpGet:
+              path: /weather-forecast/actuator/health
+              port: 8082
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            failureThreshold: 30
+          livenessProbe:
+            httpGet:
+              path: /weather-forecast/actuator/health
+              port: 8082
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /weather-forecast/actuator/health
+              port: 8082
+            initialDelaySeconds: 10
+            periodSeconds: 5

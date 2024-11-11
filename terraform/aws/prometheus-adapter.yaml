@@ -3,16 +3,16 @@ prometheus:
   port: 9090
   path: ""
 rules:
-  default: true
+  default: false
   custom:
     - seriesQuery: '{__name__=~"^http_server_requests_seconds_.*"}'
       resources:
         overrides:
-          kubernetes_namespace:
-            resource: namespace
-          kubernetes_pod_name:
-            resource: pod
+          namespace: { resource: "namespace" }
+          pod: { resource: "pod" }
       name:
         matches: "^http_server_requests_seconds_count(.*)"
         as: "http_server_requests_seconds_count_sum"
-      metricsQuery: sum(<<.Series>>{<<.LabelMatchers>>,uri=~"/weather-forecast.*"}) by (<<.GroupBy>>)
+      metricsQuery: sum(<<.Series>>{<<.LabelMatchers>>,uri=~"/forecast.*"}) by (<<.GroupBy>>)
+nodeSelector:
+  node: app

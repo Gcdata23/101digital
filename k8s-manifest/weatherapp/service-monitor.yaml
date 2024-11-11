@@ -9,7 +9,6 @@ spec:
     - targetPort: 8082
       port: http
       interval: 1s
-      honorLabels: true
       path: /weather-forecast/actuator/prometheus
       scheme: http
       scrapeTimeout: 1s

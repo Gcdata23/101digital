@@ -333,6 +333,15 @@ resource "helm_release" "prometheus" {
     name  = "thanos.nodeSelector.node"
     value = "app"
   }
+  set {
+    name  = "prometheus.prometheusSpec.podMonitorSelectorNilUsesHelmValues"
+    value = "false"
+  }
+
+  set {
+    name  = "prometheus.prometheusSpec.serviceMonitorSelectorNilUsesHelmValues"
+    value = "false"
+  }
   depends_on = [module.max_weather]
 }
 
@@ -340,6 +349,14 @@ resource "helm_release" "prometheus-adapter" {
   name       = "prometheus-adapter"
   repository = "https://prometheus-community.github.io/helm-charts"
   chart      = "prometheus-adapter"
+  values = [file("prometheus-adapter.yaml")]
+  depends_on = [module.max_weather]
+}
+
+resource "helm_release" "metric-server" {
+  name       = "metric-server"
+  repository = "https://kubernetes-sigs.github.io/metrics-server/"
+  chart      = "metrics-server"
   set {
     name  = "nodeSelector.node"
     value = "app"

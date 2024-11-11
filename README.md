@@ -15,9 +15,15 @@ In the Terraform script, there are 2 part,
 2. The second part is the helm release resource to install necessary tool for integration
 > **_NOTE:_**  In the first run please command all the helm release resource and helm provider. Sorry for this inconvient since I have limited time so the structure might not be good enough
 
+For Autoscale, I use supported tools: prometheus and prometheus adapter to autoscale the app using metric "http_server_requests_seconds_count_sum"
 Test Result for Autoscale
 
-![img.png](img.png)
+#### Node Auto Scale
+![img_9.png](img_9.png)
+![img_7.png](img_7.png)
+
+#### Pod Auto Scale
+![img_8.png](img_8.png)
 
 > **_NOTE:_**  In the picture above I just want to show that I'm able to autoscale the node when I run the jenkins pipeline.
 
@@ -42,7 +48,7 @@ For Authorization I used IAM BuildIn with a IAM user
 ![img_5.png](img_5.png)
 
 2. With Authorization
-![img_2.png](img_2.png)
+![img_6.png](img_6.png)
 
 2. Without Authorization
 ![img_3.png](img_3.png)

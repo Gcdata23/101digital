@@ -6,7 +6,6 @@
 
 ![Image](101digital.drawio.png)
 
-
 ### Item 2 Terraform scripts to create all the infrastructure components (The Terraform code must be modularised. CloudWatch services and scaling code must be tested prior to submission)
 
 [Terraform Code](terraform)
@@ -34,3 +33,12 @@ Test Result for Autoscale
 ### Item 5 Application API deployed into AWS API gateway
 
 ![img_1.png](img_1.png)
+I created VPN Link cause the LB is internal
+![img_4.png](img_4.png)
+### Item 6 Working postman script to demonstrate the API with proper authentication
+
+1. With Authorization
+![img_2.png](img_2.png)
+
+2. Without Authorization
+![img_3.png](img_3.png)

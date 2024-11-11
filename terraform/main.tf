@@ -10,6 +10,8 @@ terraform {
 # Configure the AWS Provider
 provider "aws" {
   region     = "us-west-2"
+  access_key = var.access_key
+  secret_key = var.secret_ket
 }
 
 provider "helm" {
@@ -368,5 +370,9 @@ resource "helm_release" "jenkins" {
   set {
     name  = "controller.installPlugins[4]"
     value = "pipeline-utility-steps:2.18.0"
+  }
+  set {
+    name  = "controller.installPlugins[5]"
+    value = "pipeline-aws:1.45"
   }
 }

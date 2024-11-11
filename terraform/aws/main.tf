@@ -14,27 +14,6 @@ provider "aws" {
   secret_key = var.secret_ket
 }
 
-provider "helm" {
-  registry_config_path = "repositories.yaml"
-  kubernetes {
-    config_path = "~/.kube/config"
-  }
-
-  # localhost registry with password protection
-  #  registry {
-  #    url = "oci://localhost:5000"
-  #    username = "username"
-  #    password = "password"
-  #  }
-
-  #  # private registry
-  #  registry {
-  #    url = "oci://private.registry"
-  #    username = "username"
-  #    password = "password"
-  #  }
-}
-
 module "max_weather" {
   source                  = "./module"
   region                  = "us-west-2"
@@ -74,6 +53,43 @@ module "max_weather" {
   }
 }
 
+data "aws_eks_cluster" "eks" {
+  name = module.max_weather.aws_eks_cluster_name
+  depends_on = [module.max_weather]
+}
+
+data "aws_eks_cluster_auth" "eks" {
+  name = module.max_weather.aws_eks_cluster_name
+  depends_on = [module.max_weather]
+}
+
+provider "helm" {
+  registry_config_path = "repositories.yaml"
+  kubernetes {
+#    host = data.aws_eks_cluster.eks.endpoint
+#    cluster_ca_certificate = base64decode(data.aws_eks_cluster.eks.certificate_authority[0].data)
+#    token                  = data.aws_eks_cluster_auth.eks.token
+
+    config_path = "~/.kube/config"
+  }
+
+  # localhost registry with password protection
+  #  registry {
+  #    url = "oci://localhost:5000"
+  #    username = "username"
+  #    password = "password"
+  #  }
+
+  #  # private registry
+  #  registry {
+  #    url = "oci://private.registry"
+  #    username = "username"
+  #    password = "password"
+  #  }
+}
+
+
+
 #source https://github.com/kubernetes/autoscaler/tree/master/charts/cluster-autoscaler
 resource "helm_release" "autoscaler" {
   name       = "autoscaler"
@@ -97,6 +113,7 @@ resource "helm_release" "autoscaler" {
     name  = "rbac.serviceAccount.annotations.eks\\.amazonaws\\.com/role-arn"
     value = module.max_weather.eks_cluster_autoscaler_role_arn
   }
+  depends_on = [data.aws_eks_cluster.eks]
 }
 
 resource "helm_release" "aws-load-balancer-controller" {
@@ -116,14 +133,6 @@ resource "helm_release" "aws-load-balancer-controller" {
     name  = "clusterName"
     value = module.max_weather.aws_eks_cluster_name
   }
-  #  set {
-  #    name  = "serviceAccount.create"
-  #    value = "false"
-  #  }
-  #  set {
-  #    name  = "serviceAccount.name"
-  #    value = "aws-load-balancer-controller"
-  #  }
   set {
     name  = "serviceAccount.annotations.eks\\.amazonaws\\.com/role-arn"
     value = module.max_weather.aws-load-balancer-controller_role_arn
@@ -136,36 +145,7 @@ resource "helm_release" "aws-load-balancer-controller" {
     name  = "vpcId"
     value = module.max_weather.vpc_id
   }
-  #  set {
-  #    name  = "controller.service.externalTrafficPolicy"
-  #    value = "Local"
-  #  }
-  #  set {
-  #    name  = "controller.service.annotations.service\\.beta\\.kubernetes\\.io/aws-load-balancer-internal"
-  #    value = "true"
-  #  }
-  #  set {
-  #    name  = "controller.service.annotations.service\\.beta\\.kubernetes\\.io/aws-load-balancer-type"
-  #    value = "nlb"
-  #  }
-  #
-  #  set {
-  #    name  = "controller.service.annotations.service\\.beta\\.kubernetes\\.io/aws-load-balancer-type"
-  #    value = "nlb"
-  #  }
-  #
-  #  set {
-  #    name  = "controller.service.annotations.service\\.beta\\.kubernetes\\.io/aws-load-balancer-cross-zone-load-balancing-enabled"
-  #    value = "true"
-  #  }
-  #  set {
-  #    name  = "controller.service.annotations.service\\.beta\\.kubernetes\\.io/aws-load-balancer-manage-backend-security-group-rules"
-  #    value = "true"
-  #  }
-  #  set {
-  #    name  = "controller.service.annotations.service\\.beta\\.kubernetes\\.io/aws-load-balancer-security-groups"
-  #    value = "sg-0a243e4f7808d0fda"
-  #  }
+  depends_on = [data.aws_eks_cluster.eks]
 }
 
 resource "helm_release" "nginx_ingress" {
@@ -207,7 +187,7 @@ resource "helm_release" "nginx_ingress" {
     name  = "controller.service.annotations.service\\.beta\\.kubernetes\\.io/aws-load-balancer-security-groups"
     value = module.max_weather.aws_security_group_nlb_id
   }
-  depends_on = [module.max_weather]
+  depends_on = [data.aws_eks_cluster.eks]
 }
 
 # Log To CloudWatch
@@ -286,7 +266,7 @@ resource "helm_release" "fluent-bit" {
     name  = "env[5].value"
     value = "On"
   }
-  depends_on = [module.max_weather]
+  depends_on = [data.aws_eks_cluster.eks]
 }
 
 resource "helm_release" "prometheus" {
@@ -342,7 +322,7 @@ resource "helm_release" "prometheus" {
     name  = "prometheus.prometheusSpec.serviceMonitorSelectorNilUsesHelmValues"
     value = "false"
   }
-  depends_on = [module.max_weather]
+  depends_on = [data.aws_eks_cluster.eks]
 }
 
 resource "helm_release" "prometheus-adapter" {
@@ -350,7 +330,7 @@ resource "helm_release" "prometheus-adapter" {
   repository = "https://prometheus-community.github.io/helm-charts"
   chart      = "prometheus-adapter"
   values = [file("prometheus-adapter.yaml")]
-  depends_on = [module.max_weather]
+  depends_on = [data.aws_eks_cluster.eks]
 }
 
 resource "helm_release" "metric-server" {
@@ -361,7 +341,7 @@ resource "helm_release" "metric-server" {
     name  = "nodeSelector.node"
     value = "app"
   }
-  depends_on = [module.max_weather]
+  depends_on = [data.aws_eks_cluster.eks]
 }
 
 resource "helm_release" "jenkins" {
@@ -405,5 +385,5 @@ resource "helm_release" "jenkins" {
     name  = "controller.installPlugins[5]"
     value = "kubernetes-cli:1.12.1"
   }
-  depends_on = [module.max_weather]
+  depends_on = [data.aws_eks_cluster.eks]
 }

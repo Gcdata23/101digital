@@ -15,7 +15,7 @@ In the Terraform script, there are 2 part,
 2. The second part is the helm release resource to install necessary tool for integration
 > **_NOTE:_**  In the first run please command all the helm release resource and helm provider. Sorry for this inconvient since I have limited time so the structure might not be good enough
 
-For Autoscale, I use supported tools: prometheus and prometheus adapter to autoscale the app using metric "http_server_requests_seconds_count_sum"
+For Autoscale, I use supported tools: prometheus and prometheus adapter to autoscale the app using metric **"http_server_requests_seconds_count_sum"**
 Test Result for Autoscale
 
 #### Node Auto Scale

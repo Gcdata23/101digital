@@ -17,4 +17,4 @@ spec:
           name: http_server_requests_seconds_count_sum
         target:
           type: AverageValue
-          averageValue: 10
+          averageValue: 5
